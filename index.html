@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Your Location</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .location-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            background: #f0fff4;
+            color: #276749;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .map-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .map-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="location-icon">📍</div>
+        <h1>Get Your Location</h1>
+        <p class="subtitle">Click the button below to detect your current location</p>
+
+        <button id="getLocation" onclick="getLocation()">
+            Get My Location
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Detecting your location...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <h3>Your Location</h3>
+            <div class="info-row">
+                <span class="info-label">Latitude</span>
+                <span class="info-value" id="latitude">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Longitude</span>
+                <span class="info-value" id="longitude">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Accuracy</span>
+                <span class="info-value" id="accuracy">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Timestamp</span>
+                <span class="info-value" id="timestamp">-</span>
+            </div>
+            <a class="map-link" id="mapLink" href="#" target="_blank">
+                🗺️ View on Google Maps
+            </a>
+            <div class="success" id="success">Location saved successfully!</div>
+        </div>
+    </div>
+
+    <script>
+        function getLocation() {
+            const button = document.getElementById('getLocation');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const error = document.getElementById('error');
+            const success = document.getElementById('success');
+
+            // Reset states
+            result.classList.remove('show');
+            error.classList.remove('show');
+            success.classList.remove('show');
+            loading.classList.add('show');
+            button.disabled = true;
+
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                showError('Geolocation is not supported by your browser.');
+                return;
+            }
+
+            // Get current position
+            navigator.geolocation.getCurrentPosition(
+                onSuccess,
+                onError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        async function onSuccess(position) {
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const button = document.getElementById('getLocation');
+            const success = document.getElementById('success');
+
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const timestamp = new Date(position.timestamp);
+
+            // Update UI
+            document.getElementById('latitude').textContent = lat.toFixed(6);
+            document.getElementById('longitude').textContent = lng.toFixed(6);
+            document.getElementById('accuracy').textContent = accuracy.toFixed(1) + ' meters';
+            document.getElementById('timestamp').textContent = timestamp.toLocaleString();
+
+            // Update map link
+            const mapLink = document.getElementById('mapLink');
+            mapLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
+
+            // Show result
+            loading.classList.remove('show');
+            result.classList.add('show');
+            button.disabled = false;
+
+            // Save location to server
+            try {
+                const response = await fetch('/api/save-location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: lat,
+                        longitude: lng,
+                        accuracy: accuracy,
+                        timestamp: timestamp.toISOString(),
+                        userAgent: navigator.userAgent
+                    })
+                });
+
+                if (response.ok) {
+                    success.classList.add('show');
+                }
+            } catch (err) {
+                console.log('Could not save to server, saving locally');
+            }
+
+            // Also save to localStorage as backup
+            saveToLocalStorage(lat, lng, accuracy, timestamp);
+        }
+
+        function saveToLocalStorage(lat, lng, accuracy, timestamp) {
+            const locations = JSON.parse(localStorage.getItem('savedLocations') || '[]');
+            locations.push({
+                latitude: lat,
+                longitude: lng,
+                accuracy: accuracy,
+                timestamp: timestamp.toISOString(),
+                userAgent: navigator.userAgent
+            });
+            localStorage.setItem('savedLocations', JSON.stringify(locations));
+        }
+
+        function onError(err) {
+            let message = '';
+
+            switch (err.code) {
+                case err.PERMISSION_DENIED:
+                    message = 'Location access denied. Please enable location permissions in your browser settings.';
+                    break;
+                case err.POSITION_UNAVAILABLE:
+                    message = 'Location information is unavailable. Please try again.';
+                    break;
+                case err.TIMEOUT:
+                    message = 'Location request timed out. Please try again.';
+                    break;
+                default:
+                    message = 'An unknown error occurred while getting your location.';
+                    break;
+            }
+
+            showError(message);
+        }
+
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const button = document.getElementById('getLocation');
+
+            error.textContent = message;
+            loading.classList.remove('show');
+            error.classList.add('show');
+            button.disabled = false;
+        }
+    </script>
+</body>
+</html>
