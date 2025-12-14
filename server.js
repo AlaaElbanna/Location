@@ -10,6 +10,38 @@ if (!fs.existsSync(DATA_FILE)) {
     fs.writeFileSync(DATA_FILE, '[]');
 }
 
+// Write queue to prevent race conditions
+const writeQueue = [];
+let isWriting = false;
+
+function saveLocationToFile(locationData) {
+    return new Promise((resolve, reject) => {
+        writeQueue.push({ locationData, resolve, reject });
+        processQueue();
+    });
+}
+
+function processQueue() {
+    if (isWriting || writeQueue.length === 0) return;
+
+    isWriting = true;
+    const { locationData, resolve, reject } = writeQueue.shift();
+
+    try {
+        const existingData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+        existingData.push(locationData);
+        fs.writeFileSync(DATA_FILE, JSON.stringify(existingData, null, 2));
+        console.log('Location saved:', locationData);
+        resolve({ success: true, message: 'Location saved' });
+    } catch (err) {
+        console.error('Error saving location:', err);
+        reject(err);
+    } finally {
+        isWriting = false;
+        processQueue(); // Process next item in queue
+    }
+}
+
 const server = http.createServer((req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -44,7 +76,7 @@ const server = http.createServer((req, res) => {
             body += chunk.toString();
         });
 
-        req.on('end', () => {
+        req.on('end', async () => {
             try {
                 const locationData = JSON.parse(body);
 
@@ -52,19 +84,11 @@ const server = http.createServer((req, res) => {
                 locationData.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
                 locationData.savedAt = new Date().toISOString();
 
-                // Read existing data
-                const existingData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-
-                // Add new location
-                existingData.push(locationData);
-
-                // Save to file
-                fs.writeFileSync(DATA_FILE, JSON.stringify(existingData, null, 2));
-
-                console.log('Location saved:', locationData);
+                // Save using queue to prevent race conditions
+                const result = await saveLocationToFile(locationData);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true, message: 'Location saved' }));
+                res.end(JSON.stringify(result));
             } catch (err) {
                 console.error('Error saving location:', err);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
